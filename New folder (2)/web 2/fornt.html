@@ -1,0 +1,173 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thanam Store & Vegetable Market</title>
+  <link rel="stylesheet" href="/static/css/fornt.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/"><strong>Thanam Store</strong> &amp; Vegetable Market</a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/products/">Products</a>
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+        <a href="/cart/">Cart</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <p>© Thanam Store & Vegetable Market • Freshness & Trust</p>
+    </div>
+  </footer>
+</body>
+</html>
+
+
+{% extends 'store/base.html' %}
+{% block content %}
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Thanam Store & Vegetable Market</h1>
+    <p class="tagline">Fresh Vegetables & Daily Essentials in One Place</p>
+    <div class="hero-actions">
+      <a class="btn" href="/products/">Shop Products</a>
+      <a class="btn outline" href="/contact/">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<section class="categories">
+  <h2>Shop by Category</h2>
+  <div class="grid">
+    {% for c in categories %}
+    <a class="card category-card" href="/products/?category={{ c.slug }}">
+      <div class="icon">🥬</div>
+      <div class="label">{{ c.name }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="offers">
+  <h2>Best Offers</h2>
+  <div class="grid">
+    {% for p in offers %}
+    <div class="card product-card">
+      <div class="p-img">{% if p.image %}<img src="{{ p.image }}" alt="{{ p.name }}">{% else %}<div class="placeholder">Image</div>{% endif %}</div>
+      <h3>{{ p.name }}</h3>
+      <p class="price">₹ {{ p.price }}</p>
+      <a class="btn small" href="/product/{{ p.pk }}/">View</a>
+      <a class="btn small" href="/add-to-cart/{{ p.pk }}/">Add</a>
+    </div>
+    {% empty %}
+    <p>No offers right now.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% extends 'store/base.html' %}
+{% block content %}
+<h2>Products</h2>
+<form method="get" class="search-form">
+  <input name="q" placeholder="Search products..." value="{{ q }}">
+  <select name="category">
+    <option value="">All Categories</option>
+    {% for c in categories %}
+    <option value="{{ c.slug }}" {% if selected_cat == c.slug %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Search</button>
+</form>
+<div class="grid products-grid">
+  {% for p in products %}
+  <div class="card product-card">
+    <div class="p-img">{% if p.image %}<img src="{{ p.image }}" alt="{{ p.name }}">{% else %}<div class="placeholder">Image</div>{% endif %}</div>
+    <h3>{{ p.name }}</h3>
+    <p class="price">₹ {{ p.price }}</p>
+    <div class="p-actions">
+      <a class="btn small" href="/product/{{ p.pk }}/">View</a>
+      <a class="btn small" href="/add-to-cart/{{ p.pk }}/">Add to Cart</a>
+    </div>
+  </div>
+  {% empty %}
+  <p>No products found.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="product-detail">
+  <div class="p-media">{% if product.image %}<img src="{{ product.image }}" alt="{{ product.name }}">{% else %}<div class="placeholder large">Image</div>{% endif %}</div>
+  <div class="p-info">
+    <h2>{{ product.name }}</h2>
+    <p class="price">₹ {{ product.price }}</p>
+    <p>{{ product.description }}</p>
+    <div class="p-actions">
+      <a class="btn" href="/add-to-cart/{{ product.pk }}/">Add to Cart</a>
+      <a class="btn outline" href="https://wa.me/?text={{ product.name }}%20₹{{ product.price }}%20-%20I%20want%20to%20order%20this.">Order on WhatsApp</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% extends 'store/base.html' %}
+{% block content %}
+<h2>Your Cart</h2>
+{% if cart %}
+<table class="cart-table">
+  <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
+  {% for k, item in cart.items %}
+  <tr>
+    <td>{{ item.name }}</td>
+    <td>{{ item.quantity }}</td>
+    <td>₹ {{ item.price }}</td>
+  </tr>
+  {% endfor %}
+  <tr><td colspan="2"><strong>Total</strong></td><td><strong>₹ {{ total }}</strong></td></tr>
+</table>
+<p>
+  <a class="btn" href="https://wa.me/?text={{ cart|urlencode }}">Order on WhatsApp</a>
+</p>
+{% else %}
+<p>Your cart is empty.</p>
+{% endif %}
+{% endblock %}
+
+{% extends 'store/base.html' %}
+{% block content %}
+<h2>About Thanam Store & Vegetable Market</h2>
+<p>Thanam Store & Vegetable Market is a family-run combined store bringing fresh vegetables, fruits and daily essentials to our community. We focus on freshness, trusted suppliers and customer satisfaction. Visit us for quality produce and household needs.</p>
+<h3>Why choose us?</h3>
+<ul>
+  <li>Farm-fresh vegetables and fruits</li>
+  <li>Daily essentials sorted and affordable</li>
+  <li>Friendly service and quick local deliveries</li>
+</ul>
+{% endblock %}
+
+{% extends 'store/base.html' %}
+{% block content %}
+<h2>Contact Us</h2>
+<p><strong>Address:</strong> 123 Market Road, Your City</p>
+<p><strong>Phone:</strong> +91-9876543210</p>
+<p><strong>Hours:</strong> Mon–Sun 7:00 AM – 9:00 PM</p>
+<h3>Location</h3>
+<div class="mapwrap">
+  <iframe width="100%" height="300" frameborder="0" style="border:0"
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.086..."></iframe>
+</div>
+<h3>Quick Order</h3>
+<p>Click to order on WhatsApp:</p>
+<a class="btn" href="https://wa.me/919876543210?text=Hello%20Thanam%20Store%20-%20I%20want%20to%20order">Order on WhatsApp</a>
+{% endblock %}
